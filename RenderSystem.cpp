@@ -16,14 +16,7 @@ namespace M3D{
 	}
 
 	bool RenderSystem::initialize(int screenWidth, int screenHeight){
-		glEnable(GL_DEPTH_TEST); // enable depth-testing
-		glDepthMask(GL_TRUE); // turn back on
-		glDepthFunc(GL_LEQUAL);
-        glDepthRange(0.0f, 1.0f);
 
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_BACK);
-		glFrontFace(GL_CCW);
 
 		float ratio = 1.0 * screenWidth / screenHeight;
 		perspective = glm::mat4(1.0);;

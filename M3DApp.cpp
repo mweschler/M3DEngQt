@@ -4,9 +4,7 @@
 #include <iostream>
 #include <cmath>
 
-#include <QGuiApplication>
 #include <QTime>
-#include <QtGui/QOpenGLFunctions>
 #include <QDebug>
 
 #include "M3DApp.h"

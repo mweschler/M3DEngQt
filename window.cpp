@@ -2,65 +2,61 @@
 
 
 
-#include <QtCore/QCoreApplication>
-#include <QtGui/QOpenGLContext>
-#include <QtGui/QOpenGLPaintDevice>
-#include <QtGui/QPainter>
+#include <QGLWidget>
 #include <QDebug>
 
 
 namespace M3D{
-    Window::Window(QWindow *parent):QWindow(parent),
-        m_update_pending(false),
-        m_animating(false),
-        m_context(0),
-        m_device(0)
+    Window::Window(QWidget *parent):QWidget(parent)
     {
-        setSurfaceType(QWindow::OpenGLSurface);
         sceneManager = NULL;
     }
 
     Window::~Window(){
-        delete m_device;
     }
 
+    /*
     void Window::render(QPainter *painter){
         Q_UNUSED(painter);
-    }
+    }*/
 
-    void Window::initialize(){
-        if(!m_context){
-            m_context = new QOpenGLContext(this);
-            m_context->setFormat(requestedFormat());
-            m_context->create();
-            if(!m_context->isValid())
-                qDebug() << "Context was not valid";
-            else
-                qDebug() << "Context OK!";
-        }
-
-        if(m_context->makeCurrent(this))
-            qDebug() << "Contex made current";
-        else
-            qDebug() << "Could not make current";
-
-    }
-
-    void Window::render(){
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    void Window::initializeGL(){
         glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glEnable(GL_DEPTH_TEST); // enable depth-testing
+        glDepthMask(GL_TRUE); // turn back on
+        glDepthFunc(GL_LEQUAL);
+        glDepthRange(0.0f, 1.0f);
+
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+        glFrontFace(GL_CCW);
+    }
+
+    void Window::paintGL(){
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         if(sceneManager != NULL)
             sceneManager->renderScene();
     }
 
+    void Window::resizeGL(int width, int height){
+        Q_UNUSED(width,height);
+        updateGL();
+    }
+
+    void Window::setSceneManager(SceneManager *sceneManager){
+        this->sceneManager = sceneManager;
+    }
+
+    /*
     void Window::renderLater(){
         if (!m_update_pending)
         {
             m_update_pending = true;
             QCoreApplication::postEvent(this, new QEvent(QEvent::UpdateRequest));
         }
-    }
+    }*/
 
+    /*
     bool Window::event(QEvent *event){
         switch(event->type()){
         case QEvent::UpdateRequest:
@@ -70,23 +66,26 @@ namespace M3D{
             return QWindow::event(event);
         }
 
-    }
+    }*/
 
+    /*
     void Window::exposeEvent(QExposeEvent *event){
         Q_UNUSED(event);
 
         if(isExposed())
             renderNow();
-    }
+    }*/
 
+    /*
     void Window::resizeEvent(QResizeEvent *event){
         Q_UNUSED(event);
 
         if(isExposed())
             renderNow();
 
-    }
+    }*/
 
+    /*
     void Window::renderNow(){
 
         if(!isExposed())
@@ -117,16 +116,15 @@ namespace M3D{
 
         if(m_animating)
             renderLater();
-    }
+    }*/
 
+    /*
     void Window::setAnimating(bool animating){
         m_animating = animating;
 
         if(animating)
             renderLater();
-    }
+    }*/
 
-    void Window::setSceneManager(SceneManager *sceneManager){
-        this->sceneManager = sceneManager;
-    }
+
 }
