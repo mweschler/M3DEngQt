@@ -1,6 +1,7 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+#include <GL/glew.h>
 #include <QGLWidget>
 #include "SceneManager.h"
 
@@ -25,10 +26,6 @@ namespace M3D{
         void setSceneManager(SceneManager *sceneManager);
 
         //void setAnimating(bool animating);
-
-    public slots:
-        //void renderLater();
-        //void renderNow();
 
     protected:
         //bool event(QEvent *event);

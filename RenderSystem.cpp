@@ -2,8 +2,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
-#include <QtOpenGL>
-#include <QGLFunctions>
 #include "RenderSystem.h"
 
 

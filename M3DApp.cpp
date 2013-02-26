@@ -6,6 +6,7 @@
 
 #include <QTime>
 #include <QDebug>
+#include <QApplication>
 
 #include "M3DApp.h"
 #include "ResourceManager.h"
@@ -31,7 +32,7 @@ namespace M3D{
     Entity box3;
     Camera *camera = NULL;
 
-	M3DApp::M3DApp(){
+    M3DApp::M3DApp(QObject *parent):QObject(parent){
 		initialized = false;
 		running = false;
 	}
@@ -67,14 +68,8 @@ namespace M3D{
 			return false;
         } */
 
-        QSurfaceFormat format;
-        format.setSamples(4);
-        format.setMajorVersion(2);
-        format.setMinorVersion(1);
-        window.setFormat(format);
         window.resize(width, height);
         window.show();
-        window.initialize();
 
         qDebug()<<"Window opened.\n";
         /*
@@ -126,7 +121,7 @@ namespace M3D{
 		return true;
 	}
 
-    int M3DApp::run(QGuiApplication *qtApp){
+    int M3DApp::run(QApplication *qtApp){
 		if(!initialized){
 			std::cout<<"Application has not been initialized first!\n";
 			return EXIT_FAILURE;
@@ -137,7 +132,6 @@ namespace M3D{
         std::cout<<"Starting QT app"<<std::endl;
 
 
-        QTime time;
         time.start();
 
 		
@@ -214,24 +208,24 @@ namespace M3D{
 		camera->setPosition(glm::vec3(5.0f, 3.0f, 5.0f));
 		camera->setTarget(glm::vec3(0.0f, 1.0f, 0.0f));
 
-        lastTime = time.second() + (time.msec() / 1000.0);
-
 		std::cout<<"Starting main loop. Updates per second: "<<UPDATES_PER_SECOND<<" Min MS per update "<< MS_PER_UPDATE<<" Framskip "<<MAX_FRAMESKIP<<std::endl;
-
+        connect(this, SIGNAL(renderNow()), &window, SLOT(updateGL()));
+        connect(&updateLoopTimer, SIGNAL(timeout()),this, SLOT(update()));
+        updateLoopTimer.setInterval(3000);
+        updateLoopTimer.start();
 
         return qtApp->exec();
 	}
 
-	void M3DApp::update(double time){
+    void M3DApp::update(){
         while(running){
-            double currentTime = time;
+            double currentTime = time.second() + (time.msec() / 1000);
             double elapsedTime = currentTime - lastTime;
             float interpolation;
             int loops = 0;
 
-
             while(currentTime >= lastTime && loops < MAX_FRAMESKIP){
-
+                qDebug() << "Update!";
                 glm::vec3 pos = box3.getPosition();
                 if(pos.y > 2 || pos.y < 0.75)
                     dir = -dir;
@@ -269,7 +263,7 @@ namespace M3D{
 
             interpolation = 0; //float( glfwGetTime() + MS_PER_UPDATE - lastTime) / float(MS_PER_UPDATE);
 
-            render(interpolation);
+            emit renderNow();
 
 
 

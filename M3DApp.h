@@ -1,24 +1,30 @@
 #ifndef _M3DAPP_H_
 #define _M3DAPP_H_
 
-#include <QGLFunctions>
+#include <QObject>
+#include <QTime>
+#include <QTimer>
 
 #include "ResourceManager.h"
 #include "SceneManager.h"
 #include "RenderSystem.h"
 #include "window.h"
 
-class QGuiApplication;
+class QApplication;
 
 namespace M3D{
-	class M3DApp{
+    class M3DApp:public QObject{
+        Q_OBJECT
 	public:
-		M3DApp();
+        M3DApp(QObject *parent =0);
 		~M3DApp();
 		bool initialize(int width, int height);
-        int run(QGuiApplication *qtApp);
+        int run(QApplication *qtApp);
+    private slots:
+        void update();
+    signals:
+        void renderNow();
 	private:
-		void update(double time);
 		void render(double time);
 		void shutdown();
 		bool initialized;
@@ -29,6 +35,8 @@ namespace M3D{
 		int screenWidth;
 		int screenHeight;
         Window window;
+        QTime time;
+        QTimer updateLoopTimer;
 	};
 }
 

@@ -2,9 +2,8 @@
 #define _MESH_H_
 
 #include <vector>
+#include <GL/glew.h>
 #include <glm\glm.hpp>
-#include <QtOpenGL>
-#include <QGLFunctions>
 
 
 namespace M3D{

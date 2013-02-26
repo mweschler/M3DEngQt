@@ -4,7 +4,6 @@
 #include <fstream>
 #include <vector>
 #include <sstream>
-#include <QGLFunctions>
 
 #include "ResourceManager.h"
 

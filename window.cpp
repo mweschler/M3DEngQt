@@ -1,13 +1,13 @@
 #include "Window.h"
 
 
-
+#include <GL/glew.h>
 #include <QGLWidget>
 #include <QDebug>
 
 
 namespace M3D{
-    Window::Window(QWidget *parent):QWidget(parent)
+Window::Window(QWidget *parent):QGLWidget(QGLFormat(QGL::SampleBuffers),parent)
     {
         sceneManager = NULL;
     }
@@ -21,6 +21,9 @@ namespace M3D{
     }*/
 
     void Window::initializeGL(){
+        GLenum status = glewInit();
+        if(status != GLEW_OK)
+            qDebug() << glewGetErrorString(status);
         glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST); // enable depth-testing
         glDepthMask(GL_TRUE); // turn back on
@@ -33,14 +36,15 @@ namespace M3D{
     }
 
     void Window::paintGL(){
+        qDebug() << "Drawing!";
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         if(sceneManager != NULL)
             sceneManager->renderScene();
     }
 
     void Window::resizeGL(int width, int height){
-        Q_UNUSED(width,height);
-        updateGL();
+
+        glViewport(0, 0, width,height);
     }
 
     void Window::setSceneManager(SceneManager *sceneManager){
