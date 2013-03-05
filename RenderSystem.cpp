@@ -22,7 +22,7 @@ namespace M3D{
 		
 		perspective = perspective;
 
-		glViewport(0, 0, screenWidth, screenHeight);
+        //glViewport(0, 0, screenWidth, screenHeight);
 
 		initialized = true;
 		return true;

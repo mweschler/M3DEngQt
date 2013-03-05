@@ -137,7 +137,7 @@ namespace M3D{
 		
 		running = true;
 		//do stuff
-
+        window.makeCurrent();
 		GLuint vert = resourceManager.loadShader(GL_VERTEX_SHADER, "lightSpec_120.vert");
 		GLuint frag = resourceManager.loadShader(GL_FRAGMENT_SHADER, "lightSpec_120.frag");
 		std::vector<GLuint> shaders;
@@ -145,7 +145,7 @@ namespace M3D{
 		shaders.push_back(frag);
 
 		GLuint prog = resourceManager.createProgram(shaders);
-
+        window.makeCurrent();
 		sceneManager.setGlobalLightDir(glm::vec3(1.0f));
 		sceneManager.setGlobalLightIntensity(glm::vec4(1.0f));
 		sceneManager.setAmbientLightIntensity(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
@@ -211,55 +211,54 @@ namespace M3D{
 		std::cout<<"Starting main loop. Updates per second: "<<UPDATES_PER_SECOND<<" Min MS per update "<< MS_PER_UPDATE<<" Framskip "<<MAX_FRAMESKIP<<std::endl;
         connect(this, SIGNAL(renderNow()), &window, SLOT(updateGL()));
         connect(&updateLoopTimer, SIGNAL(timeout()),this, SLOT(update()));
-        updateLoopTimer.setInterval(3000);
+        //QTimer::singleShot(3000, this, SLO(update()));
+
+        updateLoopTimer.setInterval(0);
         updateLoopTimer.start();
 
         return qtApp->exec();
 	}
 
     void M3DApp::update(){
-        while(running){
-            double currentTime = time.second() + (time.msec() / 1000);
-            double elapsedTime = currentTime - lastTime;
-            float interpolation;
-            int loops = 0;
 
-            while(currentTime >= lastTime && loops < MAX_FRAMESKIP){
-                qDebug() << "Update!";
-                glm::vec3 pos = box3.getPosition();
-                if(pos.y > 2 || pos.y < 0.75)
-                    dir = -dir;
+        double currentTime = time.elapsed() / 1000.0;
+        double elapsedTime = currentTime - lastTime;
+        float interpolation;
+        int loops = 0;
 
-                pos.y += 0.01 * dir;
-                box3.setPosition(pos);
+        while(currentTime >= lastTime && loops < MAX_FRAMESKIP){
+            glm::vec3 pos = box3.getPosition();
+            if(pos.y > 2 || pos.y < 0.75)
+                dir = -dir;
+             pos.y += 0.01 * dir;
+             box3.setPosition(pos);
 
-                glm::vec3 scale = box1.getScale();
-                if(scale.x > 1.5 || scale.x <0.5)
-                    scaleDir = -scaleDir;
+             glm::vec3 scale = box1.getScale();
+             if(scale.x > 1.5 || scale.x <0.5)
+                scaleDir = -scaleDir;
 
-                scale.x += 0.01 * scaleDir;
-                box1.setScale(scale);
+             scale.x += 0.01 * scaleDir;
+             box1.setScale(scale);
 
 
-                glm::vec3 camPos = camera->getPosition();
-                camDeg += .001;
-                if(camDeg >= 360)
-                    camDeg = 0;
-                camPos.x = cos(camDeg) * 5;
-                camPos.z = sin(camDeg) * 5;
-                camera->setPosition(camPos);
+             glm::vec3 camPos = camera->getPosition();
+             camDeg += .001;
+             if(camDeg >= 360)
+                camDeg = 0;
+             camPos.x = cos(camDeg) * 5;
+             camPos.z = sin(camDeg) * 5;
+             camera->setPosition(camPos);
+             glm::vec3 entityRot = box2.getRotation();
+             boxDeg += 1;
+             if(boxDeg >= 360)
+                boxDeg = 0;
+             entityRot.y = boxDeg;
+             entityRot.x = boxDeg;
 
-                glm::vec3 entityRot = box2.getRotation();
-                boxDeg += 1;
-                if(boxDeg >= 360)
-                    boxDeg = 0;
-                entityRot.y = boxDeg;
-                entityRot.x = boxDeg;
+             box2.setRotation(entityRot);
 
-                box2.setRotation(entityRot);
-
-                lastTime += MS_PER_UPDATE;
-            }
+             lastTime += MS_PER_UPDATE;
+        }
 
             interpolation = 0; //float( glfwGetTime() + MS_PER_UPDATE - lastTime) / float(MS_PER_UPDATE);
 
@@ -272,7 +271,6 @@ namespace M3D{
                 delete boxMesh;
                 shutdown();
             }*/
-        }
 		
 	}
 

@@ -36,14 +36,14 @@ Window::Window(QWidget *parent):QGLWidget(QGLFormat(QGL::SampleBuffers),parent)
     }
 
     void Window::paintGL(){
-        qDebug() << "Drawing!";
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         if(sceneManager != NULL)
             sceneManager->renderScene();
+        this->swapBuffers();
     }
 
     void Window::resizeGL(int width, int height){
-
+        qDebug() << "Setting viewport to "<<width<<" "<<height;
         glViewport(0, 0, width,height);
     }
 
